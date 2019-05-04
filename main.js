@@ -1,3 +1,6 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
 // Based on http://dhmstark.co.uk/games/life/incremental/
 
 game = {
