@@ -141,12 +141,16 @@ $('#load2').on('click', function() {
 });
 
 
-window.setInterval(function() {
+	
+var timeout = function(){
+setTimeout(function(){
   Flow();
   Move();
   drawGrid();
-
 }, 80);
+}
+timeout();
+
 </script>
 
 <div id="container" style="width:0px;"></div>
