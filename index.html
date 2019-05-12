@@ -120,27 +120,24 @@ function drawGrid() {
   }
 }
 
-
-$('#init2').on('click', function() {
+function init2(){
   for (var i = 0; i < game.gridSize; i++) {
     for (var j = 0; j < game.gridSize; j++) {
       game.grid[i][j] = 7 // Math.floor(Math.random() * 10 + 1)
     }
   }
-  drawGrid()
-});
-
-$('#save2').on('click', function() {
+  drawGrid();
+}
+	
+function save2(){
   localStorage.setItem("game", JSON.stringify(game));
-});
+}
 
-$('#load2').on('click', function() {
+function load2(){
   //game = JSON.parse(localStorage.getItem("game"));
   Flow();
   drawGrid();
-});
-
-
+}
 	
 var timeout = function(){
 setTimeout(function(){
@@ -155,9 +152,9 @@ timeout();
 
 <div id="container" style="width:0px;"></div>
 <div id="controls2">
-<button id="init2">Init</button>
-<button id="save2">Save</button>
-<button id="load2">Load</button>
+<button id="init2" onclick="init2()">Init</button>
+<button id="save2" onclick="save2()">Save</button>
+<button id="load2" onclick="load2()">Load</button>
 </div>
 <h2 id="header2"><a href="https://jsfiddle.net/LuckyCat14/1gah5vkc/">GRID</a></h2>
 </body>
