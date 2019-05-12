@@ -1,12 +1,13 @@
 <html>
-<!-- version 0.5 !-->
+<!-- version 0.6 !-->
 <!-- https://jsfiddle.net/LuckyCat14/1gah5vkc/ !-->
 <head>
 <link rel="stylesheet" href="main.css">
 
 </head>
 <body onload="initialise()">
-<script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
   
 // Based on http://dhmstark.co.uk/games/life/incremental/
 
@@ -147,6 +148,12 @@ setTimeout(function(){
 }, 80);
 }
 timeout();
+	
+	window.setInterval(function() {
+  Flow();
+  drawGrid();
+
+}, 80);
 
 </script>
 
