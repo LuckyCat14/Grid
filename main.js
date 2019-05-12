@@ -1,5 +1,5 @@
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript">
 
 // Based on http://dhmstark.co.uk/games/life/incremental/
 
@@ -140,3 +140,7 @@ window.setInterval(function() {
   drawGrid();
 
 }, 80);
+jQuery(document).ready(function(){
+initialise()
+}
+</script>
