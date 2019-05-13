@@ -1,168 +1,240 @@
 <html>
-<!-- version 0.6 !-->
-<!-- https://jsfiddle.net/LuckyCat14/1gah5vkc/ !-->
 <head>
-<link rel="stylesheet" href="main.css">
+
+<style>
+body {
+padding: 20px;
+}
+
+#banner-message {
+background: #fff;
+border-radius: 4px;
+padding: 20px;
+font-size: 25px;
+text-align: center;
+transition: all 0.2s;
+margin: 0 auto;
+width: 300px;
+}
+
+button {
+background: #0084ff;
+border: none;
+border-radius: 3px;
+padding: 4px 8px;
+font-size: 15px;
+color: #fff;
+}
+
+#banner-message.alt {
+background: #0084ff;
+color: #fff;
+margin-top: 40px;
+width: 200px;
+}
+
+#banner-message.alt button {
+background: #fff;
+color: #000;
+}
+
+#container {
+border-left: 1px solid #999;
+border-top: 1px solid #999;
+}
+
+.row {
+height: 15px;
+clear: both;
+}
+
+.node {
+float: left;
+border-right: 1px solid #999;
+border-bottom: 1px solid #999;
+height: 100%;
+}
+
+#controls {
+position: absolute;
+right: 0.2em;
+top: 0.2em;
+background-color: #eee;
+border-radius: 0.5em;
+padding: 1em;
+opacity: 0.8;
+}
+
+#controls:hover {
+opacity: 1;
+}
+</style>
 
 </head>
-<body onload="initialise()">
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript">
-  
-// Based on http://dhmstark.co.uk/games/life/incremental/
+<body>
 
-game = {
-  started: false,
-  interval: 50,
-  grid: [],
-  gridSize: 66,
-  nodeSize: 8,
-  toroidal: false
+
+<script>
+
+START_ENERGY = 5
+STEP_SIZE = .5
+minLevel2Change = 16.69
+maxLevel2Change = 85
+
+var game = {
+started: false,
+interval: 50,
+grid: [],
+gridSize: 45,
+nodeSize: 7,
+toroidal: false
 };
 
-creature={
-x:0,
-y:0,
-energy:0
-};
-
-var wave={
-	x:0,
-  y:0,
-  row:0,
-  col:0,
-  speed:0,
-  radius:0,
-  width:0
+function initialize() {
+game.started = false;
+document.getElementById("container").style.width = game.gridSize * game.nodeSize + game.gridSize + "px";
+for (var i = 0; i < game.gridSize; i++) {
+game.grid[i] = [];
+var row = document.createElement("div");
+row.className = "row";
+row.id = "row" + i;
+row.style.height = game.nodeSize + "px";
+document.getElementById("container").appendChild(row);
+for (var j = 0; j < game.gridSize; j++) {
+game.grid[i][j] = START_ENERGY;
+var node = document.createElement("div");
+node.className = "node";
+node.id = "node" + i + "-" + j;
+node.style.width = game.nodeSize + "px";
+node.onclick = function() {
+click(this);
+drawGrid();
 }
-
-waves=[]
-
-function initialise() {
-  game.started = false;
-  document.getElementById("container").style.width = game.gridSize * game.nodeSize + game.gridSize + "px";
-  for (var i = 0; i < game.gridSize; i++) {
-    game.grid[i] = [];
-    var row = document.createElement("div");
-    row.className = "row";
-    row.id = "row" + i;
-    row.style.height = game.nodeSize + "px";
-    document.getElementById("container").appendChild(row);
-    for (var j = 0; j < game.gridSize; j++) {
-      game.grid[i][j] = 0;
-      var node = document.createElement("div");
-      node.className = "node";
-      node.id = "node" + i + "-" + j;
-      node.style.width = game.nodeSize + "px";
-      node.onclick = function() {
-        click(this);
-        drawGrid();
-      }
-      document.getElementById("row" + i).appendChild(node);
-    }
-  }
-  game = JSON.parse(localStorage.getItem("game"));
-  drawGrid();
+document.getElementById("row" + i).appendChild(node);
+}
+}
+// game = JSON.parse(localStorage.getItem("game"));
+drawGrid();
 
 }
-
-function click(node) {
-  var nodeID = node.id.slice(4); // node3-16
-  var separator = nodeID.indexOf("-");
-  var x = nodeID.slice(0, separator);
-  var y = nodeID.slice(separator + 1);
-  if (game.grid[x][y] == 10) {
-    game.grid[x][y] = 0;
-  } else {
-    game.grid[x][y] += 1;
-  }
-  drawGrid();
-}
-
-function Move(){
-
-}
-
-function Flow() {
-  for (var x = 0; x < game.gridSize; x++) {
-    for (var y = 0; y < game.gridSize; y++) {
-      var r = Math.random() * 100 + 1
-      if (r > 85) {
-
-        if (game.grid[x][y] == 10) {
-          game.grid[x][y] = 10;
-        } else {
-          game.grid[x][y] += 1;
-        }
-
-      } else if (r < 15) {
-
-        if (game.grid[x][y] == 0) {
-          game.grid[x][y] = 0;
-        } else {
-          game.grid[x][y] -= 1;
-        }
-
-      }
-    }
-  }
-}
-
 
 function drawGrid() {
-  // document.getElementById("header2")=document.getElementById("header")+"a"
-  for (var i = 0; i < game.gridSize; i++) {
-    for (var j = 0; j < game.gridSize; j++) {
-      document.getElementById("node" + i + "-" + j).style.backgroundColor =
-        "#00" +
-        Math.floor(80 + (17.5 * game.grid[i][j])).toString(16) +
-        "FF";
-    }
-  }
+// document.getElementById("header2")=document.getElementById("header")+"a"
+var k = 0, e = 0
+
+for (var i = 0; i < game.gridSize; i++) {
+for (var j = 0; j < game.gridSize; j++) {
+e=game.grid[i][j];
+k+=e;
+/* document.getElementById("node" + i + "-" + j).style.backgroundColor = "#00" + Math.floor(32 + (20 * game.grid[i][j])).toString(16) + "FF"; */
+document.getElementById("node" + i + "-" + j).style.backgroundColor =
+(e<1)?"#1e3eb9":
+(e<2)?"#185fd8":
+(e<3)?"#1271eb":
+(e<4)?"#0084ff":
+(e<5)?"#0092ff":
+(e<6)?"#2ba3ff":
+(e<7)?"#58b3ff":
+(e<8)?"#8cc9ff":
+(e<9)?"#baddff":
+(e>=9)?"#e2f2ff":
+"#000000";
+
+}
+}
+for (var h=1;h<=harecount;h++) {
+document.getElementById("node" + hare[h].x + "-" + hare[h].y).style.backgroundColor = "red";
+}
+document.getElementById("counter").innerHTML=Math.floor((game.gridSize*game.gridSize*START_ENERGY-k)/100);
 }
 
-function init2(){
-  for (var i = 0; i < game.gridSize; i++) {
-    for (var j = 0; j < game.gridSize; j++) {
-      game.grid[i][j] = 7 // Math.floor(Math.random() * 10 + 1)
-    }
-  }
-  drawGrid();
+
+function click(node) {
+var nodeID = node.id.slice(4); // node3-16
+var separator = nodeID.indexOf("-");
+var x2 = nodeID.slice(0, separator);
+var y2 = nodeID.slice(separator + 1);
+
+var _new = true
+for(var h=1;h<hare.length;h++){
+if (hare[h].x=x2, hare[h].y=y2){
+hare[h].energy=10;
+_new = false
 }
-	
-function save2(){
-  localStorage.setItem("game", JSON.stringify(game));
+}
+if (_new){
+hare[++harecount] = {energy:10,age:0,x:+x2,y:+y2};
+console.log('new hare x:'+x2+', y:'+y2+', harecount:'+harecount)
+}
+/*
+if (game.grid[x][y] == 10) {
+game.grid[x][y] = 0;
+} else {
+game.grid[x][y] += +STEP_SIZE;
+}
+*/
 }
 
-function load2(){
-  //game = JSON.parse(localStorage.getItem("game"));
-  Flow();
-  drawGrid();
-}
-	
-var timeout = function(){
-setTimeout(function(){
-  Flow();
-  Move();
-  drawGrid();
-}, 80);
-}
-timeout();
-	
-	window.setInterval(function() {
-  Flow();
-  drawGrid();
+function flow() {
+for (var x = 0; x < game.gridSize; x++) {
+for (var y = 0; y < game.gridSize; y++) {
+var r = Math.random() * 100 + 1
+if (r > maxLevel2Change) {
 
-}, 80);
+if (game.grid[x][y] >= 9) {
+game.grid[x][y] = 9;
+} else {
+game.grid[x][y] += +STEP_SIZE;
+}
+
+} else if (r < minLevel2Change) {
+
+if (game.grid[x][y] <= 0) {
+game.grid[x][y] = 0;
+} else {
+game.grid[x][y] -= +STEP_SIZE;
+}
+
+}
+}
+}
+};
+
+
+/*
+var timerId = setInterval(function() { 
+i+=1;
+console.log('Привет '+i);
+if(i>=10){
+clearInterval(timerId);
+}
+}, 500);
+*/
+
+setTimeout(function run() { 
+flow();
+drawGrid();
+setTimeout(run, game.interval);
+}, game.interval);
+
+document.addEventListener("DOMContentLoaded", initialize);
+
+var hare = {
+energy:0,
+age:0,
+x:0,
+y:0
+}
+
+var harecount = 0;
 
 </script>
 
+<h1 id="h1">test</h1>
+<button id="init2">Init</button>
+<p></p>
 <div id="container" style="width:0px;"></div>
-<div id="controls2">
-<button id="init2" onclick="init2()">Init</button>
-<button id="save2" onclick="save2()">Save</button>
-<button id="load2" onclick="load2()">Load</button>
-</div>
-<h2 id="header2"><a href="https://jsfiddle.net/LuckyCat14/1gah5vkc/">GRID .6</a></h2>
+<p></p>
+<div id="counter">0</div>
 </body>
 </html>
