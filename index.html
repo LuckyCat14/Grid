@@ -3,70 +3,86 @@
 
 <style>
 body {
-padding: 20px;
+  padding: 20px;
 }
 
 #banner-message {
-background: #fff;
-border-radius: 4px;
-padding: 20px;
-font-size: 25px;
-text-align: center;
-transition: all 0.2s;
-margin: 0 auto;
-width: 300px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 20px;
+  font-size: 25px;
+  text-align: center;
+  transition: all 0.2s;
+  margin: 0 auto;
+  width: 300px;
 }
 
+
+
 button {
-background: #0084ff;
-border: none;
-border-radius: 3px;
-padding: 4px 8px;
-font-size: 15px;
-color: #fff;
+  background-main: #005EFF;
+
+  complimentary1:  #0041B3;
+  complimentary2:  #196EFF;
+  complimentary3:  #005EFF;
+  complimentary4:  #B37900;
+  complimentary5:  #FFAD00;
+
+  triangle1: #124DB3;
+  triangle2: #FF3919;
+  triangle3: #005EFF;
+  triangle4: #98CC14;
+
+
+  background: #124DB3;
+  border: none;
+  border-radius: 3px;
+  padding: 4px 8px;
+  font-size: 15px;
+  color: #fff;
 }
 
 #banner-message.alt {
-background: #0084ff;
-color: #fff;
-margin-top: 40px;
-width: 200px;
+  background: #0084FF;
+  color: #fff;
+  margin-top: 40px;
+  width: 200px;
 }
 
 #banner-message.alt button {
-background: #fff;
-color: #000;
+  background: #fff;
+  color: #000;
 }
 
 #container {
-border-left: 1px solid #999;
-border-top: 1px solid #999;
+  border-left: 1px solid #999;
+  border-top: 1px solid #999;
 }
 
 .row {
-height: 15px;
-clear: both;
+  height: 15px;
+  clear: both;
 }
 
 .node {
-float: left;
-border-right: 1px solid #999;
-border-bottom: 1px solid #999;
-height: 100%;
+  float: left;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
+  height: 100%;
 }
 
 #controls {
-position: absolute;
-right: 0.2em;
-top: 0.2em;
-background-color: #eee;
-border-radius: 0.5em;
-padding: 1em;
-opacity: 0.8;
+  position: absolute;
+  right: 0.2em;
+  top: 0.2em;
+  background-color: #FF8400;
+  border-radius: 0.5em;
+  padding: 1em;
+  opacity: 0.8;
 }
 
 #controls:hover {
-opacity: 1;
+  opacity: 1;
 }
 </style>
 
@@ -76,129 +92,243 @@ opacity: 1;
 
 <script>
 
-START_ENERGY = 5
-STEP_SIZE = .5
-minLevel2Change = 16.69
-maxLevel2Change = 85
+COLOR_THEMES = [
+	 ["#1E3EB9","#185FD8","#1271EB","#0084FF","#0092FF","#2BA3FF","#58B3FF","#8CC9FF","#BADDFF","#E2F2FF"]
+	,["#0066FF","#0070FF","#007AFF","#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF"]
+	,["#0076FF","#007DFF","#0084FF","#008BFF","#0092FF","#0099FF","#00A0FF","#00A7FF","#00AEFF","#00B5FF"]
+	,["#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF","#00CAFF","#00D4FF","#00DEFF"]
+	,["#2084FF","#2091FF","#209EFF","#20ABFF","#20B8FF","#20C5FF","#20D2FF","#20DFFF","#20ECFF","#20F9FF"]
+	,["#20F9FF","#20ECFF","#20DFFF","#20D2FF","#20C5FF","#20B8FF","#20ABFF","#209EFF","#2091FF","#2084FF"]
+,["#009FFF","#0097FF","#008FFF","#0087FF","#007FFF","#0077FF","#006FFF","#0067FF","#005FFF","#0057FF"]
+,["#009FFF","#0096FF","#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF"]
+,["#0096FF","#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF","#0045FF"]
+,["#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF","#0045FF","#003CFF"]
+,["#208DFF","#2084FF","#207BFF","#2072FF","#2069FF","#2060FF","#2057FF","#204EFF","#2045FF","#203CFF"]
+
+];
+
 
 var game = {
-started: false,
-interval: 50,
-grid: [],
-gridSize: 45,
-nodeSize: 7,
-toroidal: false
+  currentColorTheme: 6,
+  interval: 30,
+  gridSize: 35,
+  cellSize: 10,
+  startEnergy: 5,
+  bornCycle: 15,
+  moveCycle: 4,
+  moveEnergy: 1,
+  minLevel2Change: 16.69,
+  maxLevel2Change: 85,
+  incrementEnergy: .2,
+  maxHareAge: 100,
+  toroidal: false,
+
+  started: false,
+  grid: []
 };
 
-function initialize() {
-game.started = false;
-document.getElementById("container").style.width = game.gridSize * game.nodeSize + game.gridSize + "px";
-for (var i = 0; i < game.gridSize; i++) {
-game.grid[i] = [];
-var row = document.createElement("div");
-row.className = "row";
-row.id = "row" + i;
-row.style.height = game.nodeSize + "px";
-document.getElementById("container").appendChild(row);
-for (var j = 0; j < game.gridSize; j++) {
-game.grid[i][j] = START_ENERGY;
-var node = document.createElement("div");
-node.className = "node";
-node.id = "node" + i + "-" + j;
-node.style.width = game.nodeSize + "px";
-node.onclick = function() {
-click(this);
-drawGrid();
-}
-document.getElementById("row" + i).appendChild(node);
-}
-}
-// game = JSON.parse(localStorage.getItem("game"));
-drawGrid();
 
+var hares=[];
+var hare = {energy:0,
+	maxEnergy:0,
+	age:0,
+	maxAge:0,
+	cycle:0,
+	speed:8,
+	x:0,
+	y:0
+	}
+var harecount = 0;
+
+var harecolor = [];
+harecolor[1] = "#0C7EB3";
+harecolor[2] = "#B36100";
+harecolor[3] = "#FF9A21";
+harecolor[4] = "#20B8FF";
+harecolor[5] = "#1B94CC";
+
+var _bornCycle =0
+var _moveCycle =0
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+function initialize() {
+
+  game.started = false;
+  document.getElementById("container").style.width = game.gridSize * game.cellSize + game.gridSize + "px";
+  for (var i = 1; i <= game.gridSize; i++) {
+    game.grid[i] = [];
+    var row = document.createElement("div");
+    row.className = "row";
+    row.id = "row" + i;
+    row.style.height = game.cellSize + "px";
+    document.getElementById("container").appendChild(row);
+    for (var j = 1; j <= game.gridSize; j++) {
+      game.grid[i][j] = game.startEnergy;
+      var node = document.createElement("div");
+      node.className = "node";
+      node.id = "node" + i + "-" + j;
+      node.style.width = game.cellSize + "px";
+      node.onclick = function() {
+        click(this);
+        if (!game.started){drawGrid()};
+      }
+      document.getElementById("row" + i).appendChild(node);
+    }
+  }
+  // game = JSON.parse(localStorage.getItem("game"));
+  startGame();
 }
+
 
 function drawGrid() {
-// document.getElementById("header2")=document.getElementById("header")+"a"
-var k = 0, e = 0
+  var k = 0, e = 0
 
-for (var i = 0; i < game.gridSize; i++) {
-for (var j = 0; j < game.gridSize; j++) {
-e=game.grid[i][j];
-k+=e;
-/* document.getElementById("node" + i + "-" + j).style.backgroundColor = "#00" + Math.floor(32 + (20 * game.grid[i][j])).toString(16) + "FF"; */
-document.getElementById("node" + i + "-" + j).style.backgroundColor =
-(e<1)?"#1e3eb9":
-(e<2)?"#185fd8":
-(e<3)?"#1271eb":
-(e<4)?"#0084ff":
-(e<5)?"#0092ff":
-(e<6)?"#2ba3ff":
-(e<7)?"#58b3ff":
-(e<8)?"#8cc9ff":
-(e<9)?"#baddff":
-(e>=9)?"#e2f2ff":
-"#000000";
+  for (var i = 1; i <= game.gridSize; i++) {
+    for (var j = 1; j <= game.gridSize; j++) {
+      e=game.grid[i][j];
+      k+=e;
+      document.getElementById("node" + i + "-" + j).style.backgroundColor =
+        (e<1)?COLOR_THEMES[game.currentColorTheme][0]:
+        (e<2)?COLOR_THEMES[game.currentColorTheme][1]:
+        (e<3)?COLOR_THEMES[game.currentColorTheme][2]:
+        (e<4)?COLOR_THEMES[game.currentColorTheme][3]:
+        (e<5)?COLOR_THEMES[game.currentColorTheme][4]:
+        (e<6)?COLOR_THEMES[game.currentColorTheme][5]:
+        (e<7)?COLOR_THEMES[game.currentColorTheme][6]:
+        (e<8)?COLOR_THEMES[game.currentColorTheme][7]:
+        (e<9)?COLOR_THEMES[game.currentColorTheme][8]:
+        (e>=9)?COLOR_THEMES[game.currentColorTheme][9]:
+	"#000000";}}
 
-}
-}
-for (var h=1;h<=harecount;h++) {
-document.getElementById("node" + hare[h].x + "-" + hare[h].y).style.backgroundColor = "red";
-}
-document.getElementById("counter").innerHTML=Math.floor((game.gridSize*game.gridSize*START_ENERGY-k)/100);
-}
+  for (var h=1;h<=harecount;h++) {
+    if (('x' in hares[h])&('y' in hares[h])){
+      // document.getElementById("node" + i + "-" + j).style.backgroundColor = "#00" + Math.floor(32 + (20 * game.grid[i][j])).toString(16) + "FF"; */
+      document.getElementById("node" + hares[h].x + "-" + hares[h].y).style.backgroundColor = harecolor[3]; // "#FF9A21"
+      document.getElementById("node" + hares[h].x + "-" + hares[h].y).style.backgroundColor = "#FF" 
+	+ Math.floor(64 + (5 * hares[h].age)).toString(16) 
+	+ Math.floor(64 + (2 * hares[h].age)).toString(16);}}
+
+  document.getElementById("counters").innerHTML=
+     "<div>delta E: "+Math.floor((game.gridSize*game.gridSize*game.startEnergy-k)/100)+"</div>"
+    +"<div>Hare: "+harecount+"</div>";
+} // drawGrid()
 
 
 function click(node) {
-var nodeID = node.id.slice(4); // node3-16
-var separator = nodeID.indexOf("-");
-var x2 = nodeID.slice(0, separator);
-var y2 = nodeID.slice(separator + 1);
+  var nodeID = node.id.slice(4); // node3-16
+  var separator = nodeID.indexOf("-");
+  var nodeX = +nodeID.slice(0, separator);
+  var nodeY = +nodeID.slice(separator + 1);
 
-var _new = true
-for(var h=1;h<hare.length;h++){
-if (hare[h].x=x2, hare[h].y=y2){
-hare[h].energy=10;
-_new = false
-}
-}
-if (_new){
-hare[++harecount] = {energy:10,age:0,x:+x2,y:+y2};
-console.log('new hare x:'+x2+', y:'+y2+', harecount:'+harecount)
-}
-/*
-if (game.grid[x][y] == 10) {
-game.grid[x][y] = 0;
-} else {
-game.grid[x][y] += +STEP_SIZE;
-}
-*/
-}
+  var _new = true
+  for(var h=1;h<harecount;h++){
+    if (('x' in hares[h])&('y' in hares[h])){
+      if ((hares[h].x==nodeX)&(hares[h].y==nodeY)){
+        hares[h].energy=10;
+        _new = false
+      }
+    }
+  }
+  if (_new){
+    hares[++harecount] = new Hare(x=nodeX,y=nodeY);
+  }
+} // click
+
 
 function flow() {
-for (var x = 0; x < game.gridSize; x++) {
-for (var y = 0; y < game.gridSize; y++) {
-var r = Math.random() * 100 + 1
-if (r > maxLevel2Change) {
+  for (var x = 1; x <= game.gridSize; x++) {
+    for (var y = 1; y <= game.gridSize; y++) {
+      var r = Math.random() * 100 + 1
+      if (r > game.maxLevel2Change) {
 
-if (game.grid[x][y] >= 9) {
-game.grid[x][y] = 9;
-} else {
-game.grid[x][y] += +STEP_SIZE;
-}
+        if (game.grid[x][y] >= 9) {
+          game.grid[x][y] = 9;
+        } else {
+          game.grid[x][y] += +game.incrementEnergy;
+        }
 
-} else if (r < minLevel2Change) {
+      } else if (r < game.minLevel2Change) {
 
-if (game.grid[x][y] <= 0) {
-game.grid[x][y] = 0;
-} else {
-game.grid[x][y] -= +STEP_SIZE;
-}
+        if (game.grid[x][y] <= 0) {
+          game.grid[x][y] = 0;
+        } else {
+          game.grid[x][y] -= +game.incrementEnergy;
+        }
 
-}
-}
-}
+      }
+    }
+  }
+}; // flow
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function Hare(x,y,energy,maxAge,maxSpeed){
+  this.x = x;
+  this.y = y;
+  this.energy = energy || Math.random()*10+1;
+  this.age = 0;
+  this.maxAge = maxAge || Math.random()*game.maxHareAge+1 ; 
+  this.maxSpeed = maxSpeed || 1;
+  this.cycle = 0;
+} // Hare
+
+
+function moveHare(){
+  var m = 0
+  if (_moveCycle%game.moveCycle==0){
+    _moveCycle = 0
+    for(i=1;i<=harecount;i++){
+
+      m = "."+Math.floor(Math.random() * 17 + 1)+".";
+	//  2  3    4  5    6  7
+	//  8  9     1     10 11
+	// 12 13   14 15   16 17
+      if( ".2.3.8.9.12.13.".indexOf(m)>0){	hares[i].energy-=game.moveEneregy;hares[i].y -= (hares[i].y>1)?1:0;}
+      if( ".6.7.10.11.16.17.".indexOf(m)>0){	hares[i].energy-=game.moveEneregy;hares[i].y += (hares[i].y<game.gridSize)?1:0;}
+      if(".2.3.4.5.6.7.".indexOf(m)>0){		hares[i].energy-=game.moveEneregy;hares[i].x -= (hares[i].x>1)?1:0;}
+      if(".12.13.14.15.16.17".indexOf(m)>0){	hares[i].energy-=game.moveEneregy;hares[i].x += (hares[i].x<game.gridSize)?1:0;}
+
+      if (game.grid[ hares[i].x ][ hares[i].y ]>1){
+        hares[i].energy++;
+        game.grid[hares[i].x][hares[i].y]--;}
+
+      if (hares[i].energy < 1) {
+        hares[i].age+=1;
+      } else {
+        hares[i].age+=2;}
+    };
+  };
+  _moveCycle+=1;
 };
+
+
+function bornHare(){
+  if (_bornCycle%game.bornCycle==0){
+    _bornCycle = 0
+    var p  = Math.floor(game.gridSize /2);
+    hares[++harecount] = new Hare(x=p,y=p)
+  }
+  _bornCycle+=1;
+}
+
+
+function dieHare(){
+  i=1
+  while(i<=harecount){
+    if(hares[i].age >= hares[i].maxAge){
+      hares.splice(i,1);
+      harecount--;
+    } else {
+    i++;
+    }
+  }
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 /*
@@ -206,35 +336,64 @@ var timerId = setInterval(function() {
 i+=1;
 console.log('Привет '+i);
 if(i>=10){
-clearInterval(timerId);
+	clearInterval(timerId);
 }
 }, 500);
 */
 
-setTimeout(function run() { 
-flow();
-drawGrid();
-setTimeout(run, game.interval);
+function initGame(){
+  for (var i = 1; i <= game.gridSize; i++) {
+    for (var j = 1; j <= game.gridSize; j++) {
+      game.grid[i][j] = game.startEnergy;}}
+}
+
+function saveGame(){
+  localStorage.setItem("game", JSON.stringify(game));
+}
+
+
+function loadGame(){
+  game = JSON.parse(localStorage.getItem("game"));
+}
+
+
+function stopGame(){
+  clearInterval(timerId);
+  game.started = false;
+};
+
+
+function startGame(){
+  game.started = true;
+  setTimeout(function run() { 
+	flow();
+	bornHare();
+	moveHare();
+	drawGrid();
+	dieHare();
+	drawGrid();
+	timerId = setTimeout(run, game.interval);
 }, game.interval);
+};
+
 
 document.addEventListener("DOMContentLoaded", initialize);
 
-var hare = {
-energy:0,
-age:0,
-x:0,
-y:0
-}
-
-var harecount = 0;
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 </script>
 
-<h1 id="h1">test</h1>
-<button id="init2">Init</button>
+<h1 id="h1">= flow()</h1>
+<div style="#controls">
+  <button id="init" onclick="initGame()">Init</button>
+  <button id="start" onclick="startGame()">Start</button>
+  <button id="stop" onclick="stopGame()">Stop</button>
+  <button id="save" onclick="saveGame()">Save</button>
+  <button id="load" onclick="loadGame()">Load</button>
+</div>
 <p></p>
 <div id="container" style="width:0px;"></div>
 <p></p>
-<div id="counter">0</div>
+<div id="counters" style="#banner-message"></div>
 </body>
 </html>
