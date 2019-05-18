@@ -236,6 +236,16 @@ function click(node) {
 } // click
 
 
+function shiftGrid() {
+  for (var x = 1; x <= game.gridSize; x++) {
+    for (var y = 1; y < game.gridSize; y++) {
+      game[x][y] = game[x][y+1];
+    }
+    game[x][game.gridSize] = game.startEnergy;
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
 function flow() {
   for (var x = 1; x <= game.gridSize; x++) {
     for (var y = 1; y <= game.gridSize; y++) {
@@ -391,6 +401,8 @@ document.addEventListener("DOMContentLoaded", initialize);
   <button id="stop" onclick="stopGame()">Stop</button>
   <button id="save" onclick="saveGame()">Save</button>
   <button id="load" onclick="loadGame()">Load</button>
+  <button id="shift" onclick="shiftGridLeft()">Load</button>
+
 </div>
 <p></p>
 <div id="container" style="width:0px;"></div>
