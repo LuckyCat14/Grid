@@ -239,9 +239,9 @@ function click(node) {
 function shiftGrid() {
   for (var x = 1; x <= game.gridSize; x++) {
     for (var y = 1; y < game.gridSize; y++) {
-      game[x][y] = game[x][y+1];
+      game.grid[x][y] = game.grid[x][y+1];
     }
-    game[x][game.gridSize] = game.startEnergy;
+    game.grid[x][game.gridSize] = game.grid.startEnergy;
   }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////
