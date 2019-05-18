@@ -114,8 +114,10 @@ var game = {
   gridSize: 35,
   cellSize: 10,
   startEnergy: 5,
-  bornCycle: 15,
-  moveCycle: 4,
+  bornHareCycle: 7,
+  moveHareCycle: 4,
+  shiftFieldCycle:3,
+  shiftDirection:0,
   moveEnergy: 1,
   minLevel2Change: 16.69,
   maxLevel2Change: 85,
@@ -243,12 +245,27 @@ function shiftGrid() {
     }
     game.grid[x][game.gridSize] = game.startEnergy;
   }
+  for (var x = 1; x <= harecount; x++) {
+    if (hares[x].y>1){
+      hares[x].y--;
+    }
+  }
 }
 	
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
+var curShiftFieldCycle = 0;
 function flow() {
+
+  if (game.shiftDirection!=0){
+    if (curShiftFieldCycle%game.shiftFieldCycle==0){
+      curShiftFieldCycle = 0;
+      shiftGrid();
+    }
+    curShiftFieldCycle ++;
+  };
+	
   for (var x = 1; x <= game.gridSize; x++) {
     for (var y = 1; y <= game.gridSize; y++) {
       var r = Math.random() * 100 + 1
@@ -288,10 +305,11 @@ function Hare(x,y,energy,maxAge,maxSpeed){
 } // Hare
 
 
+var curMoveHareCycle = 0
 function moveHare(){
   var m = 0
-  if (_moveCycle%game.moveCycle==0){
-    _moveCycle = 0
+  if (curMoveHareCycle%game.moveHareCycle==0){
+    curMoveHareCycle = 0
     for(i=1;i<=harecount;i++){
 
       m = "."+Math.floor(Math.random() * 17 + 1)+".";
@@ -313,17 +331,18 @@ function moveHare(){
         hares[i].age+=2;}
     };
   };
-  _moveCycle+=1;
+  curMoveHareCycle ++;
 };
 
 
+var curBornHareCycle = 0
 function bornHare(){
-  if (_bornCycle%game.bornCycle==0){
-    _bornCycle = 0
+  if (curBornHareCycle %game.bornHareCycle==0){
+    curBornHareCycle = 0
     var p  = Math.floor(game.gridSize /2);
     hares[++harecount] = new Hare(x=p,y=p)
   }
-  _bornCycle+=1;
+  curBornHareCycle ++;
 }
 
 
@@ -388,6 +407,9 @@ function startGame(){
 }, game.interval);
 };
 
+function shiftSwitch(){
+  if (game.shiftDirection==0){game.shiftDirection++}else{game.shiftDirection--};
+};
 
 document.addEventListener("DOMContentLoaded", initialize);
 
@@ -403,8 +425,7 @@ document.addEventListener("DOMContentLoaded", initialize);
   <button id="stop" onclick="stopGame()">Stop</button>
   <button id="save" onclick="saveGame()">Save</button>
   <button id="load" onclick="loadGame()">Load</button>
-  <button id="shift" onclick="shiftGrid()">Shift</button>
-
+  <button id="shift" onclick="shiftSwitch()">Shift</button>
 </div>
 <p></p>
 <div id="container" style="width:0px;"></div>
