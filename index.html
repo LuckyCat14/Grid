@@ -241,9 +241,11 @@ function shiftGrid() {
     for (var y = 1; y < game.gridSize; y++) {
       game.grid[x][y] = game.grid[x][y+1];
     }
-    game.grid[x][game.gridSize] = game.grid.startEnergy;
+    game.grid[x][game.gridSize] = game.startEnergy;
   }
 }
+	
+	
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 function flow() {
