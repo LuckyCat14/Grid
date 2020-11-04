@@ -93,7 +93,7 @@ button {
 <script>
 
 COLOR_THEMES = [
-	 ["#1E3EB9","#185FD8","#1271EB","#0084FF","#0092FF","#2BA3FF","#58B3FF","#8CC9FF","#BADDFF","#E2F2FF"]
+	 ["#333333","#DDDDDD","#33BB33","#33BBBB","#BB3333","#BB33BB","#BBBB33","#BBBBBB","#BADDFF","#E2F2FF"]
 	,["#0066FF","#0070FF","#007AFF","#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF"]
 	,["#0076FF","#007DFF","#0084FF","#008BFF","#0092FF","#0099FF","#00A0FF","#00A7FF","#00AEFF","#00B5FF"]
 	,["#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF","#00CAFF","#00D4FF","#00DEFF"]
@@ -109,7 +109,7 @@ COLOR_THEMES = [
 
 
 var game = {
-  currentColorTheme: 6,
+  currentColorTheme: 0,
   interval: 30,
   gridSize: 35,
   cellSize: 10,
@@ -119,8 +119,6 @@ var game = {
   shiftFieldCycle:3,
   shiftDirection:0,
   moveEnergy: 1,
-  minLevel2Change: 16.69,
-  maxLevel2Change: 85,
   incrementEnergy: .2,
   maxHareAge: 100,
   toroidal: false,
@@ -131,6 +129,7 @@ var game = {
 
 
 var hares=[];
+var harecount = 0;
 var hare = {energy:0,
 	maxEnergy:0,
 	age:0,
@@ -140,7 +139,6 @@ var hare = {energy:0,
 	x:0,
 	y:0
 	}
-var harecount = 0;
 
 var harecolor = [];
 harecolor[1] = "#0C7EB3";
@@ -212,8 +210,7 @@ function drawGrid() {
 	+ Math.floor(64 + (2 * hares[h].age)).toString(16);}}
 
   document.getElementById("counters").innerHTML=
-     "<div>delta E: "+Math.floor((game.gridSize*game.gridSize*game.startEnergy-k)/100)+"</div>"
-    +"<div>Hare: "+harecount+"</div>";
+    "<div>Hare:</div>";
 } // drawGrid()
 
 
@@ -268,24 +265,6 @@ function flow() {
 	
   for (var x = 1; x <= game.gridSize; x++) {
     for (var y = 1; y <= game.gridSize; y++) {
-      var r = Math.random() * 100 + 1
-      if (r > game.maxLevel2Change) {
-
-        if (game.grid[x][y] >= 9) {
-          game.grid[x][y] = 9;
-        } else {
-          game.grid[x][y] += +game.incrementEnergy;
-        }
-
-      } else if (r < game.minLevel2Change) {
-
-        if (game.grid[x][y] <= 0) {
-          game.grid[x][y] = 0;
-        } else {
-          game.grid[x][y] -= +game.incrementEnergy;
-        }
-
-      }
     }
   }
 }; // flow
@@ -375,7 +354,9 @@ if(i>=10){
 function initGame(){
   for (var i = 1; i <= game.gridSize; i++) {
     for (var j = 1; j <= game.gridSize; j++) {
-      game.grid[i][j] = game.startEnergy;}}
+      game.grid[i][j] = Math.random()*2;
+    }
+  }
 }
 
 function saveGame(){
@@ -398,10 +379,6 @@ function startGame(){
   game.started = true;
   setTimeout(function run() { 
 	flow();
-	bornHare();
-	moveHare();
-	drawGrid();
-	dieHare();
 	drawGrid();
 	timerId = setTimeout(run, game.interval);
 }, game.interval);
