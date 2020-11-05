@@ -205,12 +205,13 @@ function drawGrid() {
     if (('x' in hares[h])&('y' in hares[h])){
       // document.getElementById("node" + i + "-" + j).style.backgroundColor = "#00" + Math.floor(32 + (20 * game.grid[i][j])).toString(16) + "FF"; */
       document.getElementById("node" + hares[h].x + "-" + hares[h].y).style.backgroundColor = harecolor[3]; // "#FF9A21"
-      document.getElementById("node" + hares[h].x + "-" + hares[h].y).style.backgroundColor = "#FF" 
-	+ Math.floor(64 + (5 * hares[h].age)).toString(16) 
+      document.getElementById("node" + hares[h].x + "-" + hares[h].y).style.backgroundColor = "#FF"
+	+ Math.floor(64 + (5 * hares[h].age)).toString(16)
 	+ Math.floor(64 + (2 * hares[h].age)).toString(16);}}
 
   document.getElementById("counters").innerHTML=
-    "<div>Hare:</div>";
+    "<div>Generation:</div>";
+    +"<div>Population:</div>";
 } // drawGrid()
 
 
@@ -248,8 +249,8 @@ function shiftGrid() {
     }
   }
 }
-	
-	
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 var curShiftFieldCycle = 0;
@@ -262,7 +263,7 @@ function flow() {
     }
     curShiftFieldCycle ++;
   };
-	
+
   for (var x = 1; x <= game.gridSize; x++) {
     for (var y = 1; y <= game.gridSize; y++) {
     }
@@ -278,7 +279,7 @@ function Hare(x,y,energy,maxAge,maxSpeed){
   this.y = y;
   this.energy = energy || Math.random()*10+1;
   this.age = 0;
-  this.maxAge = maxAge || Math.random()*game.maxHareAge+1 ; 
+  this.maxAge = maxAge || Math.random()*game.maxHareAge+1 ;
   this.maxSpeed = maxSpeed || 1;
   this.cycle = 0;
 } // Hare
@@ -340,17 +341,6 @@ function dieHare(){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-/*
-var timerId = setInterval(function() { 
-i+=1;
-console.log('Привет '+i);
-if(i>=10){
-	clearInterval(timerId);
-}
-}, 500);
-*/
-
 function initGame(){
   for (var i = 1; i <= game.gridSize; i++) {
     for (var j = 1; j <= game.gridSize; j++) {
@@ -377,7 +367,7 @@ function stopGame(){
 
 function startGame(){
   game.started = true;
-  setTimeout(function run() { 
+  setTimeout(function run() {
 	flow();
 	drawGrid();
 	timerId = setTimeout(run, game.interval);
