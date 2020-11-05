@@ -90,27 +90,25 @@ COLOR_THEMES = [
 
 var game = {
   currentColorTheme: 1,
-  interval: 30,
+  interval: 10,
   gridSize: 35,
   cellSize: 10,
-  shiftFieldCycle:3,
+  generationCycle:2,
+  shiftFieldCycle:15,
   shiftDirection:0,
   toroidal: false,
   started: false,
   grid: [],
   population: 0,
   generation: 0,
-  maxState: 1
+  maxState: 1,
+  born: [3],
+  survive: [2,3]
 };
-
-var _bornCycle =0
-var _moveCycle =0
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 function initialize() {
-
-  game.started = false;
   document.getElementById("container").style.width = game.gridSize * game.cellSize + game.gridSize + "px";
   for (var i = 1; i <= game.gridSize; i++) {
     game.grid[i] = [];
@@ -132,7 +130,6 @@ function initialize() {
       document.getElementById("row" + i).appendChild(node);
     }
   }
-  // game = JSON.parse(localStorage.getItem("game"));
   initGame();
 }
 
@@ -160,7 +157,8 @@ function drawGrid() {
 
   document.getElementById("counters").innerHTML=
     "<div>Generation: "+game.generation+"</div>"
-    +"<div>Population: "+game.population+"</div>";
+    +"<div>Population: "+game.population+"</div>"
+    ;
 } // drawGrid()
 
 
@@ -175,40 +173,144 @@ function click(node) {
   if (game.grid[nodeX][nodeY]>game.maxState){
     game.grid[nodeX][nodeY]=0
   }
-  // _new = false
-  // if (_new){hares[++harecount] = new Hare(x=nodeX,y=nodeY)}
-} // click
+  // if (_new){cells[++cellscount] = new Cell(x=nodeX,y=nodeY,state=stateNew)}
+} // click(node)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 function shiftGrid() {
-  for (var x = 1; x <= game.gridSize; x++) {
-    for (var y = 1; y < game.gridSize; y++) {
+  if (game.shiftDirection!=0){
+    for (var x = 1; x <= game.gridSize; x++) {
+      for (var y = 1; y <= game.gridSize; y++) {
 
-      if ((y==1)&(game.grid[x][y]>0)){
-        game.population--
+        if ((y==1)&(game.grid[x][y]>0)){game.population--}
+        game.grid[x][y] = game.grid[x][y+1];
       }
-
-      game.grid[x][y] = game.grid[x][y+1];
+      game.grid[x][game.gridSize] = Math.floor(Math.random()*2);
+      if (game.grid[x][game.gridSize]>0){game.population++};
     }
-    game.grid[x][game.gridSize] = Math.floor(Math.random()*2);
-    if (game.grid[x][game.gridSize]>0){game.population++};
   }
 }
 
+function newGeneration(){
+  var c = 0
+  var s = []
+
+  var newGrid = []
+  for (var x = 1; x <= game.gridSize; x++) {
+    newGrid[x] = [];
+    for (var y = 1; y <= game.gridSize; y++) {
+      newGrid[x][y] = 0;
+  }}
+
+  for (var x = 1; x <= game.gridSize; x++) {
+    for (var y = 1; y <= game.gridSize; y++) {
+      // top row
+      if (x==1){
+        // left column
+        if (y==1){
+          s[1]= 0                 ;s[2]= 0                 ;s[3]= 0                 ;
+          s[4]= 0                 ;s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]= 0                 ;s[8]=game.grid[x+1][ y ];s[9]=game.grid[x+1][y+1];
+        }
+        // middle column
+        if ((y>1)&(y<game.gridSize)){
+          s[1]= 0                 ;s[2]= 0                 ;s[3]= 0                 ;
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]=game.grid[x+1][y-1];s[8]=game.grid[x+1][ y ];s[9]=game.grid[x+1][y+1];
+        }
+        // right column
+        if (y==game.gridSize){
+          s[1]= 0                 ;s[2]= 0                 ;s[3]= 0                 ;
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]= 0                 ;
+          s[7]=game.grid[x+1][y-1];s[8]=game.grid[x+1][ y ];s[9]= 0                 ;
+        }
+      } // if (x=1)  // top row
+
+      // middle row
+      if ((x>1)&(x<game.gridSize)){
+        // left column
+        if (y==1){
+          s[1]= 0                 ;s[2]=game.grid[x-1][ y ];s[3]=game.grid[x-1][y+1];
+          s[4]= 0                 ;s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]= 0                 ;s[8]=game.grid[x+1][ y ];s[9]=game.grid[x+1][y+1];
+        }
+        // middle column
+        if ((y>1)&(y<game.gridSize)){
+          s[1]=game.grid[x-1][y-1];s[2]=game.grid[x-1][ y ];s[3]=game.grid[x-1][y+1];
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]=game.grid[x+1][y-1];s[8]=game.grid[x+1][ y ];s[9]=game.grid[x+1][y+1];
+        }
+        // right column
+        if (y==game.gridSize){
+          s[1]=game.grid[x-1][y-1];s[2]=game.grid[x-1][ y ];s[3]= 0                 ;
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]= 0                 ;
+          s[7]=game.grid[x+1][y-1];s[8]=game.grid[x+1][ y ];s[9]= 0                 ;
+        }
+      } // if ((x>1)&(x<game.gridSize)) // middle row
+
+      // bottom row
+      if (x==game.gridSize){
+        // left column
+        if (y==1){
+          s[1]= 0                 ;s[2]=game.grid[x-1][ y ];s[3]=game.grid[x-1][y+1];
+          s[4]= 0                 ;s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]= 0                 ;s[8]= 0                 ;s[9]= 0                 ;
+        }
+        // middle column
+        if ((y>1)&(y<game.gridSize)){
+          s[1]=game.grid[x-1][y-1];s[2]=game.grid[x-1][ y ];s[3]=game.grid[x-1][y+1];
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]=game.grid[ x ][y+1];
+          s[7]= 0                 ;s[8]= 0                 ;s[9]= 0                 ;
+        }
+        // right column
+        if (y==game.gridSize){
+          s[1]=game.grid[x-1][y-1];s[2]=game.grid[x-1][ y ];s[3]= 0                 ;
+          s[4]=game.grid[ x ][y-1];s[5]= 0                 ;s[6]= 0                 ;
+          s[7]= 0                 ;s[8]= 0                 ;s[9]= 0                 ;
+        }
+      } // (x=game.gridSize) // bottom row
+
+      c = s[1]+s[2]+s[3]+s[4]+s[5]+s[6]+s[7]+s[8]+s[9];
+
+      if (game.grid[x][y]==0){
+        if (game.born.indexOf(c)!=-1)
+          {newGrid[x][y] = 1}
+        else
+          {newGrid[x][y] = 0}
+      }
+      if (game.grid[x][y]==1){
+        if (game.survive.indexOf(c)!=-1)
+          {newGrid[x][y] = 1}
+        else
+          {newGrid[x][y] = 0}
+      }
+    }
+  }
+  for (var x = 1; x <= game.gridSize; x++) {
+    for (var y = 1; y <= game.gridSize; y++) {
+      game.grid[x][y]=newGrid[x][y]
+  }}
+  game.generation++;
+}
 
 var curShiftFieldCycle = 0;
-function flow() {
+var curGenerationCycle = 0;
 
-  if (game.shiftDirection!=0){
-    if (curShiftFieldCycle%game.shiftFieldCycle==0){
-      curShiftFieldCycle = 0;
-      shiftGrid();
-    }
-    curShiftFieldCycle ++;
-  };
-  game.generation++;
+function flow() {
+  // shift
+  if (curShiftFieldCycle%game.shiftFieldCycle==0){
+    curShiftFieldCycle = 0;
+    shiftGrid();
+  }
+  curShiftFieldCycle++;
+  // generation
+  if (curGenerationCycle%game.generationCycle==0){
+    generationCycle = 0;
+    newGeneration();
+  }
+  curGenerationCycle++;
 }; // flow
 
 
@@ -241,18 +343,22 @@ function loadGame(){
 
 
 function stopGame(){
-  clearInterval(timerId);
-  game.started = false;
+  if (game.started){
+    clearInterval(timerId);
+    game.started = false;
+  }
 };
 
 
 function startGame(){
   game.started = true;
   setTimeout(function run() {
-	flow();
-	drawGrid();
-	timerId = setTimeout(run, game.interval);
-}, game.interval);
+    flow();
+	  drawGrid();
+    if (game.started){
+	    timerId = setTimeout(run, game.interval)
+    }
+  }, game.interval);
 };
 
 function shiftSwitch(){
@@ -268,7 +374,7 @@ document.addEventListener("DOMContentLoaded", initialize);
 <h1 id="h1">Grid project</h1>
 <p></p>
 <div style="#controls">
-  <button id="init" onclick="initGame()">Init</button>
+  <button id="init" onclick="initGame()">Random</button>
   <button id="start" onclick="startGame()">Start</button>
   <button id="stop" onclick="stopGame()">Stop</button>
   <button id="save" onclick="saveGame()">Save</button>
