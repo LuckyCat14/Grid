@@ -1,5 +1,5 @@
 # Grid
-<h3>Basic structures for Conway-style projects</h3>
+Basic structures for Conway-style projects
 
 https://luckycat14.github.io/Grid/
 

@@ -20,21 +20,7 @@ body {
 
 
 button {
-  background-main: #005EFF;
-
-  complimentary1:  #0041B3;
-  complimentary2:  #196EFF;
-  complimentary3:  #005EFF;
-  complimentary4:  #B37900;
-  complimentary5:  #FFAD00;
-
-  triangle1: #124DB3;
-  triangle2: #FF3919;
-  triangle3: #005EFF;
-  triangle4: #98CC14;
-
-
-  background: #124DB3;
+  background: #2084FF; // #2084FF;
   border: none;
   border-radius: 3px;
   padding: 4px 8px;
@@ -93,27 +79,20 @@ button {
 <script>
 
 COLOR_THEMES = [
-	 ["#333333","#DDDDDD","#33BB33","#33BBBB","#BB3333","#BB33BB","#BBBB33","#BBBBBB","#BADDFF","#E2F2FF"]
-	,["#0066FF","#0070FF","#007AFF","#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF"]
+	 ["#333333","#FFFFCC","#33BB33","#33BBBB","#BB3333","#BB33BB","#BBBB33","#BBBBBB","#BADDFF","#E2F2FF"]
+	,["#20F9FF","#2084FF","#007AFF","#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF"]
 	,["#0076FF","#007DFF","#0084FF","#008BFF","#0092FF","#0099FF","#00A0FF","#00A7FF","#00AEFF","#00B5FF"]
 	,["#0084FF","#008EFF","#0098FF","#00A2FF","#00ACFF","#00B6FF","#00C0FF","#00CAFF","#00D4FF","#00DEFF"]
 	,["#2084FF","#2091FF","#209EFF","#20ABFF","#20B8FF","#20C5FF","#20D2FF","#20DFFF","#20ECFF","#20F9FF"]
 	,["#20F9FF","#20ECFF","#20DFFF","#20D2FF","#20C5FF","#20B8FF","#20ABFF","#209EFF","#2091FF","#2084FF"]
-,["#009FFF","#0097FF","#008FFF","#0087FF","#007FFF","#0077FF","#006FFF","#0067FF","#005FFF","#0057FF"]
-,["#009FFF","#0096FF","#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF"]
-,["#0096FF","#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF","#0045FF"]
-,["#008DFF","#0084FF","#007BFF","#0072FF","#0069FF","#0060FF","#0057FF","#004EFF","#0045FF","#003CFF"]
-,["#208DFF","#2084FF","#207BFF","#2072FF","#2069FF","#2060FF","#2057FF","#204EFF","#2045FF","#203CFF"]
-
 ];
 
 
 var game = {
-  currentColorTheme: 0,
+  currentColorTheme: 1,
   interval: 30,
   gridSize: 35,
   cellSize: 10,
-  startEnergy: 5,
   bornHareCycle: 7,
   moveHareCycle: 4,
   shiftFieldCycle:3,
@@ -164,7 +143,7 @@ function initialize() {
     row.style.height = game.cellSize + "px";
     document.getElementById("container").appendChild(row);
     for (var j = 1; j <= game.gridSize; j++) {
-      game.grid[i][j] = game.startEnergy;
+      game.grid[i][j] = Math.floor(Math.random()*2);
       var node = document.createElement("div");
       node.className = "node";
       node.id = "node" + i + "-" + j;
@@ -241,7 +220,7 @@ function shiftGrid() {
     for (var y = 1; y < game.gridSize; y++) {
       game.grid[x][y] = game.grid[x][y+1];
     }
-    game.grid[x][game.gridSize] = game.startEnergy;
+    game.grid[x][game.gridSize] = Math.floor(Math.random()*2);
   }
   for (var x = 1; x <= harecount; x++) {
     if (hares[x].y>1){
@@ -344,7 +323,7 @@ function dieHare(){
 function initGame(){
   for (var i = 1; i <= game.gridSize; i++) {
     for (var j = 1; j <= game.gridSize; j++) {
-      game.grid[i][j] = Math.random()*2;
+      game.grid[i][j] = Math.floor(Math.random()*2);
     }
   }
 }
@@ -384,8 +363,8 @@ document.addEventListener("DOMContentLoaded", initialize);
 
 </script>
 
-<h1 id="h1">= flow()</h1>
-<div><a href="https://github.com/LuckyCat14/Grid">https://github.com/LuckyCat14/Grid</a></div>
+<h1 id="h1">Grid project</h1>
+<p></p>
 <div style="#controls">
   <button id="init" onclick="initGame()">Init</button>
   <button id="start" onclick="startGame()">Start</button>
@@ -398,5 +377,7 @@ document.addEventListener("DOMContentLoaded", initialize);
 <div id="container" style="width:0px;"></div>
 <p></p>
 <div id="counters" style="#banner-message"></div>
+<p></p>
+<div><a href="https://github.com/LuckyCat14/Grid">https://github.com/LuckyCat14/Grid</a></div>
 </body>
 </html>
