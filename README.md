@@ -1,10 +1,10 @@
 # Grid
-Grid
-Basic structures for Conway-style projects
+<h1>Grid</h1>
+<h2>Basic structures for Conway-style projects<h2>
 
 https://luckycat14.github.io/Grid/
 
-Thanks to
+--- Thanks to ---
 * JSFiddle.com
 * GitHub.com
 * Atom.com
