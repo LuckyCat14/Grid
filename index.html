@@ -91,7 +91,7 @@ COLOR_THEMES = [
 var game = {
   currentColorTheme: 1,
   interval: 10,
-  gridSize: 35,
+  gridSize: 75,
   cellSize: 10,
   generationCycle:2,
   shiftFieldCycle:15,
@@ -99,6 +99,7 @@ var game = {
   toroidal: false,
   started: false,
   grid: [],
+  // для игры Жизнь
   population: 0,
   generation: 0,
   maxState: 1,
@@ -371,7 +372,7 @@ document.addEventListener("DOMContentLoaded", initialize);
 
 </script>
 
-<h1 id="h1">Grid project</h1>
+<h1 id="h1">Grid/Diffusion project</h1>
 <p></p>
 <div style="#controls">
   <button id="init" onclick="initGame()">Random</button>
