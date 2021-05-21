@@ -1,6 +1,8 @@
 # Grid
 Basic structures for Conway-style projects
 
+Reaction-Diffusion algoritm
+
 https://luckycat14.github.io/Grid/
 
 --- Thanks to ---
